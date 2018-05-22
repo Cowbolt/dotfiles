@@ -1,0 +1,11 @@
+*.sh
+
+
+.config/*
+!.config/tilda
+!.config/mopidy
+!.config/ranger
+
+
+.vim/swap
+
