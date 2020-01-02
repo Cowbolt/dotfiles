@@ -1,53 +1,84 @@
-set nocompatible
-execute pathogen#infect()
-colorscheme gruvbox
-set background=dark
+" VUNDLE START
+set rtp+=~/.vim/bundle/Vundle.vim
+set rtp+=~/.fzf
+call vundle#begin()
+Plugin 'VundleVim/Vundle.vim' " Package manager (Outdated: Should switch)
+Plugin 'morhetz/gruvbox' " Colorscheme
+Plugin 'junegunn/fzf.vim' " I don't really use fzf... 
+Plugin 'francoiscabrol/ranger.vim' " It's Ranger!
+Plugin 'scrooloose/nerdcommenter' " Quick (un)commenting
+Plugin 'junegunn/goyo.vim' " Reading mode (:goyo)
+Plugin 'itchyny/lightline.vim' " Improved statusbar
+Plugin 'lervag/vimtex' " Latex compilation in vim
+Plugin 'SirVer/ultisnips' " Snippets with tab completion
+Plugin 'arcticicestudio/nord-vim' " Colorscheme
+Plugin 'tikhomirov/vim-glsl' "GLSL syntax highlighting
+Plugin 'xolox/vim-misc' " IDK?
+Plugin 'xolox/vim-colorscheme-switcher' "RandomColorScheme command
+Plugin 'octol/vim-cpp-enhanced-highlight' " cpp syntax highlighting
+Plugin 'rafi/awesome-vim-colorschemes' " Bunch of different colorschemes
+Plugin 'peitalin/vim-jsx-typescript' "typescript syntax highlighting
+Plugin 'Yggdroot/indentLine' " Indendation visualization
+Plugin 'sheerun/vim-polyglot'
+Plugin 'Vimjas/vim-python-pep8-indent' " pep8 autoindentation
+Plugin 'tpope/vim-fireplace' " Clojure nRepl Integration
+Plugin 'guns/vim-sexp' " S-expression editing (Clojure)
+Plugin 'tpope/vim-sexp-mappings-for-regular-people'
+Plugin 'tpope/vim-surround' " Modify surrounding elems (parens, quotes etc)
+Plugin 'tpope/vim-repeat' " Improved repeat (.)
+Plugin 'luochen1990/rainbow' " Rainbox parens
+Plugin 'dense-analysis/ale' " LSP Async Linting
+" Plugin 'shougo/deoplete.nvim' " LSP Async Completion
+" Plugin 'roxma/nvim-yarp' " Deoplete Dependency
+" Plugin 'roxma/vim-hug-neovim-rpc' " Deoplete Dependency
+call vundle#end()
+" VUNDLE END
+
 filetype plugin indent on
+set nocompatible
+filetype off
 set linebreak
 set breakindent
 set autoindent
 syntax on
 set number
-set guioptions -=T
 set mouse=a
 set autochdir
+colorscheme gruvbox
+let g:rainbow_active = 1
+set enc=utf-8
+set fileencoding=utf-8
+
+" Set a random colorscheme on start.
+" autocmd VimEnter * RandomColorScheme
+
+" Swap Dir
+set directory^=$HOME/.vim/tmp//
+
+" Turn off that stupid beep
+set noerrorbells visualbell t_vb=
+autocmd GUIEnter * set visualbell t_vb=
+
+" SHORTCUTS
 cnoreabbrev W w
 cnoreabbrev qq qa
-runtime! ftplugin/man.vim
 
-com! FormatXML :%!python3 -c "import xml.dom.minidom, sys; print(xml.dom.minidom.parse(sys.stdin).toprettyxml())"
+" PYTHON FUNCTIONS
+com! FormatXML  :%!python3 -c "import xml.dom.minidom, sys; print(xml.dom.minidom.parse(sys.stdin).toprettyxml())"
+com! FormatJSON :%!python -m json.tool
 
 inoremap jk <ESC>
-" inoremap kj <ESC>
+inoremap JK <ESC>
+inoremap jj <ESC>
+inoremap JJ <ESC>
 
 "Proper comment highlighting for Coc
 autocmd FileType json syntax match Comment +\/\/.\+$+
-
-" Set swap directory
-set directory=$HOME/.vim/swapfiles//
-
-"dark ctermfg=223 ctermbg=235
-"hi Normal ctermfg=223 ctermbg=none
-
-"light ctermfg=237 ctermbg=229
 
 " Insert character
 :nnoremap <Space> i<Space><Esc>r
 
 nnoremap <silent> <leader>wd :tabe %<CR>
-
-" Gruvbox day/night mode toggle bound to F9
-let g:bg_flag = 0
-function! ToggleDayNight()
-  if (!g:bg_flag)
-    set background=light
-    let g:bg_flag = 1
-      else
-        set background=dark
-        let g:bg_flag = 0
-  endif
-endfunction
-nnoremap <silent> <F9> :call ToggleDayNight()<CR>
 
 " Binds Enter to newline.
 noremap <CR> o<Esc>
@@ -84,25 +115,6 @@ nnoremap <silent> <leader>sv :so $MYVIMRC<CR>
    " On pressing tab, insert 2 spaces
    set expandtab
 
-" NERDTree SETTINGS
-   " open NERDTree on startup
-   " autocmd vimenter * NERDTree
-   " maps toggle to ctrl + n
-   map <C-n> :NERDTreeToggle<CR>
-   " close NERDTree if only remaining window
-   autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
-   " focus main window on launch
-   " augroup NERD
-   "au!
-   "autocmd VimEnter * NERDTree
-   "autocmd VimEnter * wincmd p
-   "augroup END
-   " maps focus NERDTree to F2
-   noremap <F2> :NERDTreeFocus<CR>
-
-" TAGBAR SETTINGS
-  "maps toggle to F8
-  nmap <F8> :TagbarToggle<CR>
 
 " SPLIT SETTINGS
   " rebind split navigation
@@ -114,46 +126,10 @@ nnoremap <silent> <leader>sv :so $MYVIMRC<CR>
   set splitbelow
   set splitright
   " maps Shift-[h,j,k,l] to resizing a window split
-  map <silent> <S-h> <C-w><
-  map <silent> <S-j> <C-W>-
-  map <silent> <S-k> <C-W>+
-  map <silent> <S-l> <C-w>>
-
-  " enables window swapping and binds it to ø and æ
-  function! MarkWindowSwap()
-    let g:markedWinNum = winnr()
-  endfunction
-
-  function! DoWindowSwap()
-    "Mark destination
-    let curNum = winnr()
-    let curBuf = bufnr( "%" )
-    exe g:markedWinNum . "wincmd w"
-    "Switch to source and shuffle dest->source
-    let markedBuf = bufnr( "%" )
-    "Hide and open so that we aren't prompted and keep history
-    exe 'hide buf' curBuf
-    "Switch to dest and shuffle source->dest
-    exe curNum . "wincmd w"
-    "Hide and open so that we aren't prompted and keep history
-    exe 'hide buf' markedBuf
-  endfunction
-
-  nmap <silent> ø :call MarkWindowSwap()<CR>
-  nmap <silent> æ :call DoWindowSwap()<CR>
-
-
-" ALE SETTINGS
-  let g:ale_sign_column_always = 1
-  let g:airline#extensions#ale#enabled = 1
-  let g:ale_lint_on_text_changed = 'normal'
-  let g:ale_lint_on_insert_leave = 1 
-
-
-" AIRLINE SETTINGS
-  let g:airline_theme='molokai'
-  let g:airline_powerline_fonts = 1
-
+  " map <silent> <S-h> <C-w><
+  " " map <silent> <S-j> <C-W>-
+  " map <silent> <S-k> <C-W>+
+  " map <silent> <S-l> <C-w>>
 
 " NERDComment SETTINGS
   " Add spaces after comment delimiters by default
@@ -165,5 +141,53 @@ nnoremap <silent> <leader>sv :so $MYVIMRC<CR>
   " Align line-wise comment delimiters flush left instead of following code indentation
   let g:NERDDefaultAlign = 'left'
   nnoremap <leader>sc :call NERDComment(0,"toggle")<CR>
-
+  " For visual (multiline)
   vnoremap <leader>sc :call NERDComment(0,"toggle")<CR>
+
+" Gruvbox day/night mode toggle bound to F9
+let g:bg_flag = 0
+function! ToggleDayNight()
+  if (!g:bg_flag)
+    set background=light
+    let g:bg_flag = 1
+      else
+        set background=dark
+        let g:bg_flag = 0
+  endif
+endfunction
+nnoremap <silent> <F9> :call ToggleDayNight()<CR>
+
+
+" LIGHTLINE
+  set laststatus=1
+  let g:lightline = {
+        \ 'colorscheme': 'jellybeans',
+        \ }
+
+" Unbreaks vim-markdown folding + It looks better
+let g:vim_markdown_folding_style_pythonic = 1
+" Open markdown files with Chromium
+autocmd BufEnter *.md exe 'noremap <F5> :!/usr/bin/chromium %:p<CR>'
+
+" VIMTEX
+let g:tex_flavor='latex'
+let g:vimtex_view_method='zathura'
+let g:vimtex_quickfix_mode=0
+" set conceallevel=1
+" let g:tex_conceal='abdmg'
+
+" ULTISNIPS
+let g:UltiSnipsExpandTrigger="<c-tab>"
+let g:UltiSnipsJumpForwardTrigger="<c-b>"
+let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+
+"Make vim transparent
+" hi NonText ctermbg=none
+" hi Normal guibg=NONE ctermbg=NONE
+
+set conceallevel=0
+
+" Highlight non-ascii characters in red
+syntax match nonascii "[^\x00-\x7F]"
+highlight nonascii guibg=Red ctermbg=2
+
