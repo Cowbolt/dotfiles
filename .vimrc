@@ -2,19 +2,18 @@
 set rtp+=~/.vim/bundle/Vundle.vim
 set rtp+=~/.fzf
 call vundle#begin()
-Plugin 'VundleVim/Vundle.vim' " Package manager (Outdated: Should switch)
+Plugin 'VundleVim/Vundle.vim' " Package manager (Outdated, should switch)
 Plugin 'morhetz/gruvbox' " Colorscheme
 Plugin 'junegunn/fzf.vim' " I don't really use fzf... 
 Plugin 'francoiscabrol/ranger.vim' " It's Ranger!
 Plugin 'scrooloose/nerdcommenter' " Quick (un)commenting
-Plugin 'junegunn/goyo.vim' " Reading mode (:goyo)
+Plugin 'junegunn/goyo.vim' " Reading mode (:Goyo)
 Plugin 'itchyny/lightline.vim' " Improved statusbar
 Plugin 'lervag/vimtex' " Latex compilation in vim
 Plugin 'SirVer/ultisnips' " Snippets with tab completion
 Plugin 'arcticicestudio/nord-vim' " Colorscheme
 Plugin 'tikhomirov/vim-glsl' "GLSL syntax highlighting
 Plugin 'xolox/vim-misc' " IDK?
-Plugin 'xolox/vim-colorscheme-switcher' "RandomColorScheme command
 Plugin 'octol/vim-cpp-enhanced-highlight' " cpp syntax highlighting
 Plugin 'rafi/awesome-vim-colorschemes' " Bunch of different colorschemes
 Plugin 'peitalin/vim-jsx-typescript' "typescript syntax highlighting
@@ -28,6 +27,7 @@ Plugin 'tpope/vim-surround' " Modify surrounding elems (parens, quotes etc)
 Plugin 'tpope/vim-repeat' " Improved repeat (.)
 Plugin 'luochen1990/rainbow' " Rainbox parens
 Plugin 'dense-analysis/ale' " LSP Async Linting
+Plugin 'majutsushi/tagbar' " ctags browser
 " Plugin 'shougo/deoplete.nvim' " LSP Async Completion
 " Plugin 'roxma/nvim-yarp' " Deoplete Dependency
 " Plugin 'roxma/vim-hug-neovim-rpc' " Deoplete Dependency
@@ -36,7 +36,6 @@ call vundle#end()
 
 filetype plugin indent on
 set nocompatible
-filetype off
 set linebreak
 set breakindent
 set autoindent
@@ -44,13 +43,16 @@ syntax on
 set number
 set mouse=a
 set autochdir
-colorscheme gruvbox
+colorscheme hybrid_material
 let g:rainbow_active = 1
 set enc=utf-8
 set fileencoding=utf-8
+let mapleader = "\<Space>"
 
-" Set a random colorscheme on start.
-" autocmd VimEnter * RandomColorScheme
+
+" CTAGS settings
+nmap <F8> :TagbarToggle<CR>
+nnoremap <leader>a <C-]>
 
 " Swap Dir
 set directory^=$HOME/.vim/tmp//
@@ -191,3 +193,6 @@ set conceallevel=0
 syntax match nonascii "[^\x00-\x7F]"
 highlight nonascii guibg=Red ctermbg=2
 
+" FZF
+
+nnoremap <C-s> :Files<CR>

@@ -4,6 +4,9 @@ autoload -Uz promptinit
 promptinit
 prompt grml
 
+# Disable Ctrl+s
+stty -ixon
+
 #History settings
 HISTFILE=~/.histfile
 HISTSIZE=1000
@@ -29,7 +32,7 @@ export PS1="%d %% "
 #export CONSCRIPT_OPTS="-XX:MaxPermSize=512M -Dfile.encoding=UTF-8"
 export PATH="$PATH:$(ruby -e 'puts Gem.user_dir')/bin"
 # Pip user packages in path
-export PATH="$PATH:$HOME/.local/bin"
+export PATH="$PATH:$HOME/.local/bin:$HOME/.npm-global/bin"
 # Pip user packages in pythonpath
 export PYTHONPATH=$(python -c "import site, os; print(os.path.join(site.USER_BASE, 'lib', 'python', 'site-packages'))"):$PYTHONPATH
 
@@ -59,13 +62,15 @@ alias week='date +%V'
 alias bat='upower -i /org/freedesktop/UPower/devices/battery_BAT0'
 alias takepic='maim -sut 99999'
 alias du='du -h --max-depth=1'
-alias go='make && gloom/gloom'
+alias go='make && ./MPM/MPM'
 alias please='sudo $(fc -ln -1)' # Re-run previous as sudo
 alias gimme='sudo pacman -S'
 alias pipget='pip install --user'
 alias py='python'
 alias temp='watch -n 1 sensors'
-
+alias hdmi='xrandr --output HDMI1 --auto'
+alias hdmiext='xrandr --output eDP1 --auto --output HDMI1 --auto --left-of eDP1'
+alias pics='cd $HOME/Pictures/screengrabs'
 #CD to root of git project.
 cdr() {
    if [[ -z "$(git rev-parse --show-toplevel)" ]]; then
@@ -74,6 +79,8 @@ cdr() {
       builtin cd "$(git rev-parse --show-toplevel)"
    fi
 }
+
+alias loc='find . | xargs wc -l'
 
 
 #SETTINGS FOR CUR PROJECT, REMOVE THESE WHEN DONE
